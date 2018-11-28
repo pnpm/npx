@@ -5,6 +5,7 @@ node_js:
   - "9"
   - "8"
   - "6"
-cache:
-  directories:
-  - $HOME/.npm
+before_install:
+  - curl -L https://unpkg.com/@pnpm/self-installer | node
+install:
+  - pnpm install
