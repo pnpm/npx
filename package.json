@@ -1,6 +1,6 @@
 {
-  "name": "libnpx",
-  "version": "9.6.0",
+  "name": "@zkochan/libnpx",
+  "version": "9.6.1",
   "description": "support library for npx -- an tool for executing npm-based packages.",
   "main": "test/util/npx-bin.js",
   "man": "./libnpx.1",
@@ -21,7 +21,7 @@
     "update-coc": "weallbehave -o . && git add CODE_OF_CONDUCT.md && git commit -m 'docs(coc): updated CODE_OF_CONDUCT.md'",
     "update-contrib": "weallcontribute -o . && git add CONTRIBUTING.md && git commit -m 'docs(contributing): updated CONTRIBUTING.md'"
   },
-  "repository": "https://github.com/zkat/npx",
+  "repository": "https://github.com/zkochan/npx",
   "keywords": [
     "npm",
     "npm exec",

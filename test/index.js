@@ -147,7 +147,7 @@ test('installPackages unit', t => {
 test('getEnv', t => {
   return main._getEnv({npm: NPM_PATH}).then(env => {
     t.ok(env, 'got the env')
-    t.equal(env.npm_package_name, 'libnpx', 'env has run-script vars')
+    t.equal(env.npm_package_name, '@zkochan/libnpx', 'env has run-script vars')
   })
 })
 
