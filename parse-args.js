@@ -11,7 +11,7 @@ function parseArgs (argv, defaultNpm) {
     return fastPathArgs(argv, defaultNpm)
   }
 
-  npa = require('npm-package-arg')
+  npa = require('@zkochan/npm-package-arg')
 
   const parser = yargsParser(argv, defaultNpm)
 
@@ -101,7 +101,7 @@ function fastPathArgs (argv, defaultNpm) {
     parsedCmd = { registry: true, name: argv[2], raw: argv[2] }
     pkg = [`${argv[2]}@latest`]
   } else {
-    npa = require('npm-package-arg')
+    npa = require('@zkochan/npm-package-arg')
     parsedCmd = npa(argv[2])
     if (parsedCmd.type === 'directory') {
       pkg = []
@@ -131,7 +131,7 @@ parseArgs.showHelp = () => require('yargs').showHelp()
 module.exports._guessCmdName = guessCmdName
 function guessCmdName (spec) {
   if (typeof spec === 'string') {
-    if (!npa) { npa = require('npm-package-arg') }
+    if (!npa) { npa = require('@zkochan/npm-package-arg') }
     spec = npa(spec)
   }
   if (spec.scope) {

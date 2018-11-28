@@ -37,8 +37,8 @@
   },
   "license": "CC0-1.0",
   "dependencies": {
+    "@zkochan/npm-package-arg": "^1.0.1",
     "dotenv": "^4.0.0",
-    "npm-package-arg": "^5.1.2",
     "rimraf": "^2.6.1",
     "safe-buffer": "^5.1.0",
     "update-notifier": "^2.2.0",
@@ -68,6 +68,5 @@
         "test/**"
       ]
     }
-  },
-  "optionalDependencies": {}
+  }
 }
