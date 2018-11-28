@@ -16,6 +16,39 @@ const NPM_PATH = path.resolve(__dirname, '..', 'node_modules', 'npm', 'bin', 'np
 
 const NPX_ESC = isWindows ? child.escapeArg(NPX_PATH) : NPX_PATH
 
+test('npx --always-spawn', t => {
+  return child.spawn('node', [
+    NPX_ESC, '--always-spawn', 'echo-cli', 'hewwo'
+  ], {stdio: 'pipe'}).then(res => {
+    t.equal(res.stdout.trim(), 'hewwo')
+  })
+})
+
+test('npx --always-spawn resolves promise after command is executed', t => {
+  const _runCommand = child.runCommand
+  const parsed = main.parseArgs([
+    process.argv[0],
+    '[fake arg]',
+    '--always-spawn',
+    'echo-cli',
+    'hewwo'
+  ], NPM_PATH)
+  child.runCommand = (command, opts) => {
+    child.runCommand = _runCommand
+    return Promise.resolve([command, opts])
+  }
+  return main(parsed)
+    .then(args => {
+      const command = args[0]
+      const opts = args[1]
+      t.ok(command.includes('node'), 'node executes the command')
+      t.equal(opts.alwaysSpawn, true, 'set opts.alwaysSpawn')
+      t.equal(opts.command, 'echo-cli', 'set opts.command')
+      t.ok(opts.cmdOpts[0].includes('echo-cli'), 'set opts.cmdOpts[0]')
+      t.equal(opts.cmdOpts[1], 'hewwo', 'set opts.cmdOpts[1]')
+    })
+})
+
 test('npx --shell-auto-fallback', t => {
   return child.spawn('node', [
     NPX_ESC, '--shell-auto-fallback', 'zsh'
@@ -98,6 +131,10 @@ test('installPackages unit', t => {
           const err = new Error('npm failed')
           err.exitCode = 123
           return Promise.reject(err)
+        } else if (args[2] === 'pathTest') {
+          return Promise.resolve({
+            stdout: JSON.stringify(npmPath)
+          })
         } else {
           return Promise.resolve({
             stdout: JSON.stringify([].slice.call(arguments))
@@ -105,6 +142,11 @@ test('installPackages unit', t => {
         }
       },
       escapeArg (arg) {
+        if (arg === '/f@ke_/path to/node') {
+          return '\'/f@ke_/path to/node\''
+        } else if (arg === 'C:\\f@ke_\\path to\\node') {
+          return '"C:\\f@ke_\\path to\\node"'
+        }
         return arg
       }
     }
@@ -140,6 +182,22 @@ test('installPackages unit', t => {
         'npm install failure has helpful error message'
       )
       t.equal(err.exitCode, 123, 'error has exitCode')
+    })
+  }).then(() => {
+    const nodePath = process.argv[0]
+    process.argv[0] = isWindows ? 'C:\\f@ke_\\path to\\node' : '/f@ke_/path to/node'
+    return installPkgs(['pathTest'], 'myprefix', {
+      npm: NPM_PATH
+    }).then((npmPath) => {
+      process.argv[0] = nodePath
+      if (isWindows) {
+        t.equal(npmPath, '"C:\\f@ke_\\path to\\node"', 'incorrectly escaped path win32')
+      } else {
+        t.equal(npmPath, '/f@ke_/path to/node', 'incorrectly escaped path *nix')
+      }
+    }, (e) => {
+      process.argv[0] = nodePath
+      throw new Error('should not have failed')
     })
   })
 })
@@ -228,5 +286,57 @@ test('findNodeScript', t => {
     }, err => {
       t.equal(err.message, 'fail', 'close error rethrown')
     })
+  })
+})
+
+test('npx with custom installer stdio', t => {
+  const NPX_PATH = path.resolve(__dirname, 'util', 'npx-bin-inherit-stdio.js')
+  const NPX_ESC = isWindows ? child.escapeArg(NPX_PATH) : NPX_PATH
+
+  return child.spawn('node', [
+    NPX_ESC, 'say-shalom@1.2.7'
+  ], {stdio: 'pipe'}).then(res => {
+    t.equal(res.code, 0, 'command succeeded')
+    t.match(
+      res.stdout.toString(), /"added":/, 'installer output printed directly to console'
+    )
+    t.end()
+  })
+})
+
+test('noisy npx with --quiet arg on windows', {
+  skip: !isWindows && 'Only on Windows does the path to the downloaded module get printed'
+}, t => {
+  return child.spawn('node', [
+    NPX_ESC, '--quiet', 'echo-cli', 'hewwo'
+  ], {stdio: 'pipe'}).then(res => {
+    t.equal(res.stdout.trim(), 'hewwo')
+    t.end()
+  })
+})
+
+test('nice error message when no binaries on windows', {
+  skip: !isWindows && 'Only on Windows is the error message inscrutable'
+}, t => {
+  return child.spawn('node', [
+    NPX_ESC, '0'
+  ], {stdio: 'pipe'}).then(res => {
+    throw new Error('Should not have succeeded')
+  }, err => {
+    t.equal(err.stderr.split('\n')[1].trim(), 'command not found: 0')
+    t.end()
+  })
+})
+
+test('--node-arg works on Windows', {
+  skip: !isWindows && 'Only on Windows does --node-arg have issues'
+}, t => {
+  return child.spawn('node', [
+    NPX_ESC, '--quiet',
+    '--node-arg', '--no-deprecation',
+    'echo-cli', 'hewwo'
+  ], {stdio: 'pipe'}).then(res => {
+    t.equal(res.stdout.trim(), 'hewwo')
+    t.end()
   })
 })
