@@ -22,7 +22,7 @@ test('navigates out of `node_modules` without fs nav', t => {
 
 test('detects if currently in an npm package using package.json', t => {
   const fixture = new Tacks(Dir({
-    'package.json': File({name: 'foo', version: '1.2.3'})
+    'package.json': File({ name: 'foo', version: '1.2.3' })
   }))
   fixture.create(testDir)
   return getPrefix(testDir).then(prefix => {
@@ -51,7 +51,7 @@ test('returns false if no package was found in parent dirs', t => {
 test('navigates up the filesystem until it finds a package', t => {
   const fixture = new Tacks(Dir({
     'node_modules': Dir({}),
-    'a': Dir({'b': Dir({'c': Dir({'d': Dir({})})})})
+    'a': Dir({ 'b': Dir({ 'c': Dir({ 'd': Dir({}) }) }) })
   }))
   fixture.create(testDir)
   return getPrefix(path.join(testDir, 'a', 'b', 'c')).then(prefix => {
@@ -62,7 +62,7 @@ test('navigates up the filesystem until it finds a package', t => {
 test('doesn\'t go too far while navigating up', t => {
   const fixture = new Tacks(Dir({
     'node_modules': Dir({}),
-    'a': Dir({'node_modules': Dir({}), 'b': Dir({'c': Dir({'d': Dir({})})})})
+    'a': Dir({ 'node_modules': Dir({}), 'b': Dir({ 'c': Dir({ 'd': Dir({}) }) }) })
   }))
   fixture.create(testDir)
   return getPrefix(path.join(testDir, 'a', 'b', 'c')).then(prefix => {
@@ -75,7 +75,7 @@ test('fileExists unit', t => {
     fs: {
       stat (todo, cb) {
         if (todo === 'exists') {
-          cb(null, {name: 'yay'})
+          cb(null, { name: 'yay' })
         } else if (todo === 'enoent') {
           const err = new Error('not found')
           err.code = 'ENOENT'
@@ -93,7 +93,7 @@ test('fileExists unit', t => {
       throw new Error('nope')
     }, err => err)
   ]).then(results => {
-    t.deepEqual(results[0], {name: 'yay'}, 'existing stat returned')
+    t.deepEqual(results[0], { name: 'yay' }, 'existing stat returned')
     t.notOk(results[1], 'missing file succeeds with falsy')
     t.match(results[2].message, /^idk$/, 'other errors thrown')
   })

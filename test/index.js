@@ -19,7 +19,7 @@ const NPX_ESC = isWindows ? child.escapeArg(NPX_PATH) : NPX_PATH
 test('npx --always-spawn', t => {
   return child.spawn('node', [
     NPX_ESC, '--always-spawn', 'echo-cli', 'hewwo'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.equal(res.stdout.trim(), 'hewwo')
   })
 })
@@ -52,7 +52,7 @@ test('npx --always-spawn resolves promise after command is executed', t => {
 test('npx --shell-auto-fallback', t => {
   return child.spawn('node', [
     NPX_ESC, '--shell-auto-fallback', 'zsh'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.equal(res.code, 0, 'command succeeded')
     t.match(
       res.stdout, /command_not_found_handler\(\)/, 'got shell code in output'
@@ -63,7 +63,7 @@ test('npx --shell-auto-fallback', t => {
 test('npx no command', t => {
   return child.spawn('node', [
     NPX_ESC
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     throw new Error('Should not have succeeded')
   }, err => {
     t.equal(err.exitCode, 1, 'got 1 as exit code')
@@ -81,7 +81,7 @@ test('npx existing subcommand', {
 }, t => {
   return child.spawn('node', [
     NPX_ESC, 'which', 'npm'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.notOk(res.stderr, 'no stderr output')
     t.ok(res.stdout.trim(), 'got output from command')
   })
@@ -178,7 +178,7 @@ test('installPackages unit', t => {
     }, err => {
       t.match(
         err.message,
-        /Install for codefail failed with code 123/,
+        /Install for \[ 'codefail' \] failed with code 123/,
         'npm install failure has helpful error message'
       )
       t.equal(err.exitCode, 123, 'error has exitCode')
@@ -203,7 +203,7 @@ test('installPackages unit', t => {
 })
 
 test('getEnv', t => {
-  return main._getEnv({npm: NPM_PATH}).then(env => {
+  return main._getEnv({ npm: NPM_PATH }).then(env => {
     t.ok(env, 'got the env')
     t.equal(env.npm_package_name, '@zkochan/libnpx', 'env has run-script vars')
   })
@@ -221,9 +221,9 @@ test('getNpmCache', t => {
       }
     }
   })._getNpmCache
-  return getCache({npm: NPM_PATH}).then(cache => {
+  return getCache({ npm: NPM_PATH }).then(cache => {
     t.equal(cache, `${process.argv[0]} ${NPM_PATH}-escaped-as-path-false config get cache --parseable`, 'requests cache from npm')
-    return getCache({npm: NPM_PATH, userconfig})
+    return getCache({ npm: NPM_PATH, userconfig })
   }).then(cache => {
     t.equal(
       cache,
@@ -250,7 +250,7 @@ test('findNodeScript', t => {
       t.notOk(bool, 'no node script found if existing is null')
     })
   }).then(() => {
-    return main._findNodeScript(NPX_PATH, {isLocal: true}).then(script => {
+    return main._findNodeScript(NPX_PATH, { isLocal: true }).then(script => {
       t.equal(script, NPX_PATH, 'resolved dir dep to index.js')
     })
   }).then(() => {
@@ -295,7 +295,7 @@ test('npx with custom installer stdio', t => {
 
   return child.spawn('node', [
     NPX_ESC, 'say-shalom@1.2.7'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.equal(res.code, 0, 'command succeeded')
     t.match(
       res.stdout.toString(), /"added":/, 'installer output printed directly to console'
@@ -309,7 +309,7 @@ test('noisy npx with --quiet arg on windows', {
 }, t => {
   return child.spawn('node', [
     NPX_ESC, '--quiet', 'echo-cli', 'hewwo'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.equal(res.stdout.trim(), 'hewwo')
     t.end()
   })
@@ -320,7 +320,7 @@ test('nice error message when no binaries on windows', {
 }, t => {
   return child.spawn('node', [
     NPX_ESC, '0'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     throw new Error('Should not have succeeded')
   }, err => {
     t.equal(err.stderr.split('\n')[1].trim(), 'command not found: 0')
@@ -335,7 +335,7 @@ test('--node-arg works on Windows', {
     NPX_ESC, '--quiet',
     '--node-arg', '--no-deprecation',
     'echo-cli', 'hewwo'
-  ], {stdio: 'pipe'}).then(res => {
+  ], { stdio: 'pipe' }).then(res => {
     t.equal(res.stdout.trim(), 'hewwo')
     t.end()
   })

@@ -50,11 +50,11 @@ end`
 module.exports = autoFallback
 function autoFallback (shell, fromEnv, opts) {
   if (shell.includes('bash')) {
-    return mkPosix({isBash: true, install: opts.install})
+    return mkPosix({ isBash: true, install: opts.install })
   }
 
   if (shell.includes('zsh')) {
-    return mkPosix({isBash: false, install: opts.install})
+    return mkPosix({ isBash: false, install: opts.install })
   }
 
   if (shell.includes('fish')) {

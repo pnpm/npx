@@ -164,43 +164,43 @@ test('-n and --node-arg special parsing rules', t => {
   const command = 'command'
   t.like(
     mockParse('-n=--foo', command),
-    {command, nodeArg: '--foo'}
+    { command, nodeArg: '--foo' }
   )
   t.like(
     mockParse('-n', '--foo', command),
-    {command, nodeArg: '--foo'}
+    { command, nodeArg: '--foo' }
   )
   t.like(
     mockParse('--node-arg=--foo', command),
-    {command, nodeArg: '--foo'}
+    { command, nodeArg: '--foo' }
   )
   t.like(
     mockParse('--node-arg', '--foo', command),
-    {command, nodeArg: '--foo'}
+    { command, nodeArg: '--foo' }
   )
   t.like(
     mockParse('-n', '--foo', '-n', '--bar', '-n', 'baz', command),
-    {command, nodeArg: ['--foo', '--bar', 'baz']}
+    { command, nodeArg: ['--foo', '--bar', 'baz'] }
   )
   t.like(
     mockParse('--node-arg', '--foo', '--node-arg', '--bar', '--node-arg', 'baz', command),
-    {command, nodeArg: ['--foo', '--bar', 'baz']}
+    { command, nodeArg: ['--foo', '--bar', 'baz'] }
   )
   t.like(
     mockParse('-n', '--foo', '--node-arg', '--bar', '-n=baz', command),
-    {command, nodeArg: ['--foo', '--bar', 'baz']}
+    { command, nodeArg: ['--foo', '--bar', 'baz'] }
   )
   t.like(
     mockParse('-n', '-n', command),
-    {command, nodeArg: '-n'}
+    { command, nodeArg: '-n' }
   )
   t.like(
     mockParse('--node-arg', '--node-arg', command),
-    {command, nodeArg: '--node-arg'}
+    { command, nodeArg: '--node-arg' }
   )
   t.like(
     mockParse(command, '--node-arg', 'blah'),
-    {command, nodeArg: undefined, cmdOpts: ['--node-arg', 'blah']}
+    { command, nodeArg: undefined, cmdOpts: ['--node-arg', 'blah'] }
   )
   t.done()
 })

@@ -126,7 +126,7 @@ function localBinPath (cwd) {
 module.exports._getEnv = getEnv
 function getEnv (opts) {
   const args = ['run', 'env', '--parseable']
-  return findNodeScript(opts.npm, {isLocal: true}).then(npmPath => {
+  return findNodeScript(opts.npm, { isLocal: true }).then(npmPath => {
     if (npmPath) {
       args.unshift(child.escapeArg(opts.npm))
       return process.argv[0]
@@ -192,7 +192,7 @@ function getNpmCache (opts) {
   if (opts.userconfig) {
     args.push('--userconfig', child.escapeArg(opts.userconfig, true))
   }
-  return findNodeScript(opts.npm, {isLocal: true}).then(npmPath => {
+  return findNodeScript(opts.npm, { isLocal: true }).then(npmPath => {
     if (npmPath) {
       // This one is NOT escaped as a path because it's handed to Node.
       args.unshift(child.escapeArg(opts.npm))
@@ -219,7 +219,7 @@ function buildArgs (specs, prefix, opts) {
 module.exports._installPackages = installPackages
 function installPackages (specs, prefix, opts) {
   const args = buildArgs(specs, prefix, opts)
-  return findNodeScript(opts.npm, {isLocal: true}).then(npmPath => {
+  return findNodeScript(opts.npm, { isLocal: true }).then(npmPath => {
     if (npmPath) {
       args.unshift(
         process.platform === 'win32'

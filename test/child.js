@@ -7,7 +7,7 @@ const requireInject = require('require-inject')
 
 test('escapeArg on *nix', t => {
   const origPlatform = process.platform
-  Object.defineProperty(process, 'platform', {value: 'linux'})
+  Object.defineProperty(process, 'platform', { value: 'linux' })
   t.equal(child.escapeArg('foo'), 'foo', 'standard arg left intact')
   t.equal(child.escapeArg('foo bar'), '\'foo bar\'', '\'-escaped on *nix')
   t.equal(
@@ -15,13 +15,13 @@ test('escapeArg on *nix', t => {
     '\'/foo bar/baz\'"\'"\'quux.JPg\'',
     'paths escaped as usual'
   )
-  Object.defineProperty(process, 'platform', {value: origPlatform})
+  Object.defineProperty(process, 'platform', { value: origPlatform })
   t.done()
 })
 
 test('escapeArg on win32', t => {
   const origPlatform = process.platform
-  Object.defineProperty(process, 'platform', {value: 'win32'})
+  Object.defineProperty(process, 'platform', { value: 'win32' })
   t.equal(child.escapeArg('foo'), '"foo"', 'standard arg escaped')
   t.equal(child.escapeArg('foo bar'), '"foo bar"', '"-escaped on win32')
   t.equal(
@@ -29,7 +29,7 @@ test('escapeArg on win32', t => {
     'C:\\"Foo bar"\\baz\'"\\quux.JPg',
     'paths escaped as usual'
   )
-  Object.defineProperty(process, 'platform', {value: origPlatform})
+  Object.defineProperty(process, 'platform', { value: origPlatform })
   t.done()
 })
 
@@ -40,26 +40,26 @@ test('exec', t => {
         if (opts.fail) {
           cb(new Error('exec failure requested'))
         } else {
-          cb(null, {cmd, opts})
+          cb(null, { cmd, opts })
         }
       }
     }
   })
   const origPlatform = process.platform
-  return child.exec('cmd', ['arg1', 'arg2'], {opt: 1}).then(ret => {
+  return child.exec('cmd', ['arg1', 'arg2'], { opt: 1 }).then(ret => {
     t.equal(ret.cmd, 'cmd arg1 arg2', 'command string concatenated')
-    t.deepEqual(ret.opts, {opt: 1}, 'options received!')
-    Object.defineProperty(process, 'platform', {value: 'linux'})
+    t.deepEqual(ret.opts, { opt: 1 }, 'options received!')
+    Object.defineProperty(process, 'platform', { value: 'linux' })
     return child.exec('/foo bar/baz .quux\\', ['arg1', 'arg 2'])
   }).then(ret => {
     t.equal(ret.cmd, "'/foo bar/baz .quux\\' arg1 arg 2", 'unix-style escapes')
-    Object.defineProperty(process, 'platform', {value: 'win32'})
+    Object.defineProperty(process, 'platform', { value: 'win32' })
     return child.exec('C:\\foo bar\\baz .quux\\a', ['arg1', 'arg 2'])
   }).then(ret => {
     t.equal(ret.cmd, 'C:\\"foo bar"\\"baz .quux"\\a arg1 arg 2', 'win32-style escapes')
-    Object.defineProperty(process, 'platform', {value: origPlatform})
+    Object.defineProperty(process, 'platform', { value: origPlatform })
   }).then(() => {
-    return child.exec('fail', [], {fail: true}).then(() => {
+    return child.exec('fail', [], { fail: true }).then(() => {
       throw new Error('was supposed to fail')
     }, err => {
       t.equal(err.message, 'exec failure requested', 'got error')

@@ -46,7 +46,7 @@ function spawn (cmd, args, opts) {
         err.exitCode = code
         reject(err)
       } else {
-        resolve({code, stdout, stderr})
+        resolve({ code, stdout, stderr })
       }
     })
   })
