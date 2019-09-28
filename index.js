@@ -211,7 +211,8 @@ function buildArgs (specs, prefix, opts) {
   args.push('--global', '--prefix', prefix)
   if (opts.cache) args.push('--cache', opts.cache)
   if (opts.userconfig) args.push('--userconfig', opts.userconfig)
-  args.push('--loglevel', 'error', '--json')
+  // pnpm does not support these flags, so omitting
+  // args.push('--loglevel', 'error', '--json')
 
   return args
 }
