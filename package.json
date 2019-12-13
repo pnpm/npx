@@ -39,24 +39,24 @@
   "dependencies": {
     "@zkochan/npm-package-arg": "^1.0.2",
     "dotenv": "^8.2.0",
-    "rimraf": "^2.7.1",
+    "rimraf": "^3.0.0",
     "safe-buffer": "^5.2.0",
-    "which": "^1.3.1",
+    "which": "^2.0.2",
     "y18n": "^4.0.0",
-    "yargs": "^13.3.0"
+    "yargs": "^15.0.2"
   },
   "devDependencies": {
-    "cross-env": "^5.2.1",
+    "cross-env": "^6.0.3",
     "json": "^9.0.6",
-    "marked-man": "^0.6.0",
+    "marked-man": "^0.7.0",
     "mkdirp": "^0.5.1",
     "npm": "^6.13.4",
     "nyc": "^14.1.1",
     "require-inject": "^1.4.4",
-    "standard": "^12.0.1",
-    "standard-version": "^6.0.1",
+    "standard": "^14.3.1",
+    "standard-version": "^7.0.1",
     "tacks": "^1.3.0",
-    "tap": "^13.1.11",
+    "tap": "^14.10.2",
     "weallbehave": "^1.2.0",
     "weallcontribute": "^1.0.9"
   },
