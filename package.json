@@ -37,7 +37,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@zkochan/npm-package-arg": "^1.0.2",
+    "@zkochan/npm-package-arg": "^2.0.0",
     "dotenv": "^8.2.0",
     "rimraf": "^3.0.0",
     "safe-buffer": "^5.2.0",
@@ -69,6 +69,6 @@
     }
   },
   "engines": {
-    "node": ">=8.15"
+    "node": ">=10.13"
   }
 }
