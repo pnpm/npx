@@ -139,6 +139,7 @@ function ensurePackages (specs, opts) {
     const bins = process.platform === 'win32'
       ? prefix
       : path.join(prefix, 'bin')
+    fs.mkdirSync(prefix)
     const rimraf = require('rimraf')
     process.on('exit', () => rimraf.sync(prefix))
     return promisify(rimraf)(bins).then(() => {
