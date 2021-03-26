@@ -35,7 +35,7 @@ test('escapeArg on win32', t => {
 
 test('exec', t => {
   const child = requireInject('../child.js', {
-    'child_process': {
+    child_process: {
       exec (cmd, opts, cb) {
         if (opts.fail) {
           cb(new Error('exec failure requested'))

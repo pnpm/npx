@@ -11,7 +11,7 @@ const which = promisify(require('which'))
 
 module.exports = npx
 module.exports.parseArgs = parseArgs
-function npx (argv) {
+async function npx (argv) {
   const shell = argv['shell-auto-fallback']
   if (shell || shell === '') {
     const fallback = require('./auto-fallback.js')(
@@ -34,14 +34,15 @@ function npx (argv) {
 
   const startTime = Date.now()
 
+  try {
   // First, we look to see if we're inside an npm project, and grab its
   // bin path. This is exactly the same as running `$ npm bin`.
-  return localBinPath(process.cwd()).then(local => {
+    const local = await localBinPath(process.cwd())
     if (local) {
       // Local project paths take priority. Go ahead and prepend it.
       process.env.PATH = `${local}${path.delimiter}${process.env.PATH}`
     }
-    return Promise.all([
+    const args = await Promise.all([
       // Figuring out if a command exists, early on, lets us maybe
       // short-circuit a few things later. This bit here primarily benefits
       // calls like `$ npx foo`, where we might just be trying to invoke
@@ -52,60 +53,54 @@ function npx (argv) {
       // environment (so you can use `$npm_package_xxxxx` and company).
       // Without that flag, we just use the current env.
       argv.call && local && getEnv(argv)
-    ]).then(args => {
-      const existing = args[0]
-      const newEnv = args[1]
-      if (newEnv) {
-        // NOTE - we don't need to manipulate PATH further here, because
-        //        npm has already done so. And even added the node-gyp path!
-        Object.assign(process.env, newEnv)
+    ])
+    let existing = args[0]
+    const newEnv = args[1]
+    if (newEnv) {
+      // NOTE - we don't need to manipulate PATH further here, because
+      //        npm has already done so. And even added the node-gyp path!
+      Object.assign(process.env, newEnv)
+    }
+    if ((!existing && !argv.call) || argv.packageRequested) {
+      // Some npm packages need to be installed. Let's install them!
+      const results = await ensurePackages(argv.package, argv)
+      if (results && results.added && results.updated && !argv.q) {
+        console.error(Y()`npx: installed ${
+          results.added.length + results.updated.length
+        } in ${(Date.now() - startTime) / 1000}s`)
       }
-      if ((!existing && !argv.call) || argv.packageRequested) {
-        // Some npm packages need to be installed. Let's install them!
-        return ensurePackages(argv.package, argv).then(results => {
-          if (results && results.added && results.updated && !argv.q) {
-            console.error(Y()`npx: installed ${
-              results.added.length + results.updated.length
-            } in ${(Date.now() - startTime) / 1000}s`)
-          }
-          if (
-            argv.command &&
-            !existing &&
-            !argv.packageRequested &&
-            argv.package.length === 1
-          ) {
-            return promisify(fs.readdir)(results.bin).then(bins => {
-              if (process.platform === 'win32') {
-                bins = bins.filter(b => b !== 'etc' && b !== 'node_modules')
-              }
-              if (bins.length < 1) {
-                throw new Error(Y()`command not found: ${argv.command}`)
-              }
-              const cmd = new RegExp(`^${argv.command}(?:\\.cmd)?$`, 'i')
-              const matching = bins.find(b => b.match(cmd))
-              return path.resolve(results.bin, bins[matching] || bins[0])
-            }, err => {
-              if (err.code === 'ENOENT') {
-                throw new Error(Y()`command not found: ${argv.command}`)
-              } else {
-                throw err
-              }
-            })
+      if (
+        argv.command &&
+        !existing &&
+        !argv.packageRequested &&
+        argv.package.length === 1
+      ) {
+        let bins
+        try {
+          bins = await fs.promises.readdir(results.bin)
+        } catch (err) {
+          if (err.code === 'ENOENT') {
+            throw new Error(Y()`command not found: ${argv.command}`)
           } else {
-            return existing
+            throw err
           }
-        })
-      } else {
-        // We can skip any extra installation, 'cause everything exists.
-        return existing
+        }
+        if (process.platform === 'win32') {
+          bins = bins.filter(b => b !== 'etc' && b !== 'node_modules')
+        }
+        if (bins.length < 1) {
+          throw new Error(Y()`command not found: ${argv.command}`)
+        }
+        const cmd = new RegExp(`^${argv.command}(?:\\.cmd)?$`, 'i')
+        const matching = bins.find(b => b.match(cmd))
+        existing = path.resolve(results.bin, bins[matching] || bins[0])
       }
-    }).then(existing => {
-      return execCommand(existing, argv)
-    }).catch(err => {
-      !argv.q && console.error(err.message)
-      process.exitCode = err.exitCode || 1
-    })
-  })
+    }
+    return await execCommand(existing, argv)
+  } catch (err) {
+    !argv.q && console.error(err.message)
+    process.exitCode = err.exitCode || 1
+  }
 }
 
 module.exports._localBinPath = localBinPath
