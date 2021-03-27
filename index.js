@@ -4,6 +4,7 @@ const Buffer = require('safe-buffer').Buffer
 const promisify = require('./util.js').promisify
 
 const child = require('./child')
+const enquirer = require('enquirer')
 const fs = require('fs')
 const parseArgs = require('./parse-args.js')
 const path = require('path')
@@ -62,6 +63,15 @@ async function npx (argv) {
       Object.assign(process.env, newEnv)
     }
     if ((!existing && !argv.call) || argv.packageRequested) {
+      const { allowInstall } = await enquirer.prompt({
+        type: 'confirm',
+        name: 'allowInstall',
+        message: `Install the following package: ${argv.package}?`,
+      })
+      if (allowInstall === false) {
+        console.log('Cancelled')
+        process.exit(1)
+      }
       // Some npm packages need to be installed. Let's install them!
       const results = await ensurePackages(argv.package, argv)
       if (results && results.added && results.updated && !argv.q) {
