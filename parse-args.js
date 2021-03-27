@@ -217,6 +217,15 @@ function yargsParser (argv, defaultNpm) {
       describe: Y()`Suppress output from npx itself. Subcommands will not be affected.`,
       type: 'boolean'
     })
+    .option('yes', {
+      alias: 'y',
+      describe: 'Install the package if it is not available.',
+      type: 'boolean'
+    })
+    .option('no', {
+      describe: 'Do not install any new packages.',
+      type: 'boolean'
+    })
     .option('npm', {
       describe: Y()`npm binary to use for internal operations.`,
       type: 'string',

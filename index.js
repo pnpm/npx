@@ -63,14 +63,21 @@ async function npx (argv) {
       Object.assign(process.env, newEnv)
     }
     if ((!existing && !argv.call) || argv.packageRequested) {
-      const { allowInstall } = await enquirer.prompt({
-        type: 'confirm',
-        name: 'allowInstall',
-        message: `Install the following package: ${argv.package}?`,
-      })
-      if (allowInstall === false) {
-        console.log('Cancelled')
+      if (argv.no === true) {
+        console.log(`${argv.package} is not found`)
         process.exit(1)
+      }
+      if (argv.yes !== true) {
+        const { allowInstall } = await enquirer.prompt({
+          type: 'confirm',
+          initial: true,
+          name: 'allowInstall',
+          message: `Install the following package: ${argv.package}?`,
+        })
+        if (allowInstall === false) {
+          console.log('Cancelled')
+          process.exit(1)
+        }
       }
       // Some npm packages need to be installed. Let's install them!
       const results = await ensurePackages(argv.package, argv)
