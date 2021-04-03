@@ -319,7 +319,7 @@ function findNodeScript (existing, opts) {
     return Promise.resolve(false)
   } else {
     return promisify(fs.stat)(existing).then(stat => {
-      if (opts && opts.isLocal && path.extname(existing) === '.js') {
+      if (opts && opts.isLocal && ['.js', '.cjs'].includes(path.extname(existing))) {
         return existing
       } else if (opts && opts.isLocal && stat.isDirectory()) {
         // npx will execute the directory itself
