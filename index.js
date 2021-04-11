@@ -153,7 +153,14 @@ function ensurePackages (specs, opts) {
       : path.join(prefix, 'bin')
     fs.mkdirSync(prefix, { recursive: true })
     const rimraf = require('@zkochan/rimraf')
-    process.on('exit', () => rimraf.sync(prefix))
+    process.on('exit', () => {
+      try {
+        fs.rmdirSync(prefix, {
+          recursive: true,
+          maxRetries: 3,
+        })
+      } catch (err) { }
+    })
     return rimraf(bins).then(() => {
       return installPackages(specs, prefix, opts)
     }).then(info => {
