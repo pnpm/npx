@@ -152,9 +152,9 @@ function ensurePackages (specs, opts) {
       ? prefix
       : path.join(prefix, 'bin')
     fs.mkdirSync(prefix, { recursive: true })
-    const rimraf = require('rimraf')
+    const rimraf = require('@zkochan/rimraf')
     process.on('exit', () => rimraf.sync(prefix))
-    return promisify(rimraf)(bins).then(() => {
+    return rimraf(bins).then(() => {
       return installPackages(specs, prefix, opts)
     }).then(info => {
       // This will make temp bins _higher priority_ than even local bins.
