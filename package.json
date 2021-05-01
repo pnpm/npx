@@ -1,6 +1,6 @@
 {
   "name": "@zkochan/libnpx",
-  "version": "13.1.3",
+  "version": "13.1.4",
   "description": "support library for npx -- an tool for executing npm-based packages.",
   "main": "index.js",
   "man": "./libnpx.1",
