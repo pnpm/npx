@@ -220,7 +220,7 @@ function getNpmCache (opts) {
 module.exports._buildArgs = buildArgs
 function buildArgs (specs, prefix, opts) {
   const args = ['install'].concat(specs)
-  args.push('--global', '--prefix', prefix)
+  args.push('--global', '--dir', prefix)
   if (opts.userconfig) args.push('--userconfig', opts.userconfig)
   // pnpm does not support these flags, so omitting
   // args.push('--loglevel', 'error', '--json')
