@@ -221,7 +221,6 @@ module.exports._buildArgs = buildArgs
 function buildArgs (specs, prefix, opts) {
   const args = ['install'].concat(specs)
   args.push('--global', '--prefix', prefix)
-  if (opts.cache) args.push('--cache', opts.cache)
   if (opts.userconfig) args.push('--userconfig', opts.userconfig)
   // pnpm does not support these flags, so omitting
   // args.push('--loglevel', 'error', '--json')
