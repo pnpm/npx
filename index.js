@@ -8,6 +8,7 @@ const enquirer = require('enquirer')
 const fs = require('fs')
 const parseArgs = require('./parse-args.js')
 const path = require('path')
+const PATH = require('path-name')
 const which = promisify(require('which'))
 
 module.exports = npx
@@ -41,7 +42,7 @@ async function npx (argv) {
     const local = await localBinPath(process.cwd())
     if (local) {
       // Local project paths take priority. Go ahead and prepend it.
-      process.env.PATH = `${local}${path.delimiter}${process.env.PATH}`
+      process.env[PATH] = `${local}${path.delimiter}${process.env[PATH]}`
     }
     const args = await Promise.all([
       // Figuring out if a command exists, early on, lets us maybe
@@ -167,7 +168,7 @@ function ensurePackages (specs, opts) {
       // This will make temp bins _higher priority_ than even local bins.
       // This is intentional, since npx assumes that if you went through
       // the trouble of doing `-p`, you're rather have that one. Right? ;)
-      process.env.PATH = `${bins}${path.delimiter}${process.env.PATH}`
+      process.env[PATH] = `${bins}${path.delimiter}${process.env[PATH]}`
       if (!info) { info = {} }
       info.prefix = prefix
       info.bin = bins
