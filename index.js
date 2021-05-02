@@ -93,9 +93,9 @@ async function npx (argv) {
         !argv.packageRequested &&
         argv.package.length === 1
       ) {
-        let bins
+        let binDirents
         try {
-          bins = await fs.promises.readdir(results.bin)
+          binDirents = await fs.promises.readdir(results.bin, { withFileTypes: true })
         } catch (err) {
           if (err.code === 'ENOENT') {
             throw new Error(Y()`command not found: ${argv.command}`)
@@ -103,9 +103,7 @@ async function npx (argv) {
             throw err
           }
         }
-        if (process.platform === 'win32') {
-          bins = bins.filter(b => b !== 'etc' && b !== 'node_modules')
-        }
+        const bins = binDirents.filter(b => b.isFile()).map(b => b.name)
         if (bins.length < 1) {
           throw new Error(Y()`command not found: ${argv.command}`)
         }
